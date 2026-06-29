@@ -318,90 +318,156 @@ class App:
     def __init__(self) -> None:
         self.root = Tk()
         self.root.title(text("Excel Auto Refresh", "Excel 自动刷新"))
-        self.root.geometry("1080x640")
-        self.root.minsize(960, 560)
+        self.root.geometry("1240x760")
+        self.root.minsize(1080, 660)
         self.config = load_config()
         self.configure_style()
 
-        shell = ttk.Frame(self.root, padding=(18, 16, 18, 14))
+        self.root.configure(bg="#f4f6f8")
+
+        shell = Frame(self.root, bg="#f4f6f8")
         shell.pack(fill="both", expand=True)
 
-        header = ttk.Frame(shell)
-        header.pack(fill="x")
+        self.sidebar = Frame(shell, bg="#fbfcfd", width=220, highlightbackground="#e5e9ef", highlightthickness=1)
+        self.sidebar.pack(side="left", fill="y")
+        self.sidebar.pack_propagate(False)
 
-        title_block = ttk.Frame(header)
+        brand = Frame(self.sidebar, bg="#fbfcfd")
+        brand.pack(fill="x", padx=18, pady=(18, 22))
+        Label(brand, text="▣", bg="#fbfcfd", fg="#138a55", font=("Segoe UI Symbol", 17, "bold")).pack(side="left")
+        Label(
+            brand,
+            text=text("Excel Auto Refresh", "Excel 自动刷新"),
+            bg="#fbfcfd",
+            fg="#162033",
+            font=("Segoe UI", 12, "bold"),
+            anchor="w",
+        ).pack(side="left", padx=(10, 0))
+
+        self.make_nav_button(text("Task list", "任务列表"), "◷", active=True).pack(fill="x", padx=16, pady=(0, 10))
+        self.make_nav_button(text("Run logs", "运行日志"), "▤", command=self.open_logs).pack(fill="x", padx=16, pady=10)
+        self.make_nav_button(text("Settings", "设置"), "⚙", command=self.show_settings).pack(fill="x", padx=16, pady=10)
+        self.make_nav_button(text("About", "关于"), "ⓘ", command=self.show_about).pack(fill="x", padx=16, pady=10)
+
+        sidebar_spacer = Frame(self.sidebar, bg="#fbfcfd")
+        sidebar_spacer.pack(fill="both", expand=True)
+
+        safety_card = Frame(self.sidebar, bg="#edf8f1", highlightbackground="#d9efe3", highlightthickness=1)
+        safety_card.pack(fill="x", padx=18, pady=(0, 26))
+        Label(safety_card, text="◇", bg="#edf8f1", fg="#118352", font=("Segoe UI Symbol", 18, "bold")).pack(anchor="w", padx=16, pady=(14, 2))
+        Label(safety_card, text="本地运行 · 安全可靠", bg="#edf8f1", fg="#102033", font=("Segoe UI", 10, "bold")).pack(anchor="w", padx=16)
+        Label(
+            safety_card,
+            text="应用仅在本机打开 Excel\n不会上传文件或脚本\n所有文件保留在本机",
+            bg="#edf8f1",
+            fg="#607081",
+            justify="left",
+            font=("Segoe UI", 9),
+        ).pack(anchor="w", padx=16, pady=(8, 14))
+
+        footer = Frame(self.sidebar, bg="#fbfcfd")
+        footer.pack(fill="x", padx=18, pady=(0, 18))
+        Label(footer, text="v1.0.0", bg="#fbfcfd", fg="#667085", font=("Segoe UI", 9)).pack(side="left")
+        Label(footer, text="●", bg="#fbfcfd", fg="#20b15a", font=("Segoe UI", 9)).pack(side="left", padx=(48, 6))
+        Label(footer, text="就绪", bg="#fbfcfd", fg="#667085", font=("Segoe UI", 9)).pack(side="left")
+
+        main = Frame(shell, bg="#f4f6f8")
+        main.pack(side="left", fill="both", expand=True, padx=(0, 0))
+
+        content = Frame(main, bg="#ffffff", highlightbackground="#edf0f4", highlightthickness=1)
+        content.pack(fill="both", expand=True, padx=0, pady=0)
+
+        hero = Frame(content, bg="#ffffff")
+        hero.pack(fill="x", padx=26, pady=(30, 18))
+        Label(hero, text="▣↻", bg="#ffffff", fg="#13905a", font=("Segoe UI Symbol", 34, "bold")).pack(side="left", padx=(0, 18))
+
+        title_block = Frame(hero, bg="#ffffff")
         title_block.pack(side="left", fill="x", expand=True)
-        ttk.Label(title_block, text=text("Excel Auto Refresh", "Excel 自动刷新"), style="Title.TLabel").pack(anchor="w")
-        ttk.Label(
+        Label(title_block, text=text("Excel Auto Refresh", "Excel 自动刷新"), bg="#ffffff", fg="#101828", font=("Segoe UI", 24, "bold")).pack(anchor="w")
+        Label(
             title_block,
-            text=text(
-                "Schedule local Excel refreshes without scripts or uploads.",
-                "无需脚本或上传文件，即可在本机定时刷新 Excel。",
-            ),
-            style="Subtle.TLabel",
-        ).pack(anchor="w", pady=(4, 0))
+            text="无需脚本或上传文件，即可在本机定时刷新 Excel",
+            bg="#ffffff",
+            fg="#667085",
+            font=("Segoe UI", 11),
+        ).pack(anchor="w", pady=(6, 0))
 
-        ttk.Label(header, text=text("Local only", "仅本机运行"), style="Badge.TLabel").pack(side="right", padx=(16, 0))
+        Label(
+            hero,
+            text=text("▭  Local only", "仅本机运行"),
+            bg="#edf8f1",
+            fg="#117a4b",
+            font=("Segoe UI", 10, "bold"),
+            padx=18,
+            pady=9,
+        ).pack(side="right", padx=(18, 0))
 
-        privacy = ttk.Label(
-            shell,
-            text=text(
-                "Files stay on this computer. The app only opens Excel locally to refresh and save workbooks.",
-                "文件保留在本机。应用只会在本地打开 Excel 来刷新并保存工作簿。",
-            ),
-            style="Notice.TLabel",
-            wraplength=980,
-        )
-        privacy.pack(fill="x", pady=(14, 12))
+        notice = Frame(content, bg="#f0f8f4")
+        notice.pack(fill="x", padx=26, pady=(0, 24))
+        Label(notice, text="◇", bg="#f0f8f4", fg="#118352", font=("Segoe UI Symbol", 19, "bold")).pack(side="left", padx=(22, 12), pady=15)
+        Label(
+            notice,
+            text="文件保留在本机。 应用只会在本地打开 Excel 来刷新并保存工作簿。",
+            bg="#f0f8f4",
+            fg="#10804f",
+            font=("Segoe UI", 12, "bold"),
+        ).pack(side="left")
 
-        table_frame = ttk.Frame(shell)
-        table_frame.pack(fill="both", expand=True)
+        table_card = Frame(content, bg="#ffffff", highlightbackground="#dfe5ec", highlightthickness=1)
+        table_card.pack(fill="both", expand=True, padx=26, pady=(0, 22))
 
-        columns = ("file", "time", "state", "last_run", "result")
-        self.tree = ttk.Treeview(table_frame, columns=columns, show="headings", selectmode="browse")
+        columns = ("file", "time", "state", "last_run", "result", "actions")
+        self.tree = ttk.Treeview(table_card, columns=columns, show="headings", selectmode="browse")
         self.tree.heading("file", text=text("Workbook", "工作簿"))
         self.tree.heading("time", text=text("Time", "时间"))
         self.tree.heading("state", text=text("Status", "状态"))
         self.tree.heading("last_run", text=text("Last run", "上次运行"))
         self.tree.heading("result", text=text("Result", "结果"))
-        self.tree.column("file", width=420, minwidth=260, stretch=True)
-        self.tree.column("time", width=110, minwidth=90, anchor="center", stretch=False)
-        self.tree.column("state", width=150, minwidth=120, anchor="center", stretch=False)
+        self.tree.heading("actions", text=text("Actions", "操作"))
+        self.tree.column("file", width=310, minwidth=220, stretch=True)
+        self.tree.column("time", width=120, minwidth=90, anchor="center", stretch=False)
+        self.tree.column("state", width=145, minwidth=120, anchor="center", stretch=False)
         self.tree.column("last_run", width=170, minwidth=140, anchor="center", stretch=False)
-        self.tree.column("result", width=160, minwidth=130, anchor="center", stretch=False)
+        self.tree.column("result", width=145, minwidth=110, anchor="center", stretch=False)
+        self.tree.column("actions", width=150, minwidth=130, anchor="center", stretch=False)
         self.tree.bind("<Double-Button-1>", lambda _event: self.edit_task())
 
-        y_scroll = ttk.Scrollbar(table_frame, orient="vertical", command=self.tree.yview)
-        self.tree.configure(yscrollcommand=y_scroll.set)
+        self.y_scroll = ttk.Scrollbar(table_card, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscrollcommand=self.y_scroll.set)
         self.tree.grid(row=0, column=0, sticky="nsew")
-        y_scroll.grid(row=0, column=1, sticky="ns")
-        table_frame.columnconfigure(0, weight=1)
-        table_frame.rowconfigure(0, weight=1)
+        self.y_scroll.grid(row=0, column=1, sticky="ns")
+        table_card.columnconfigure(0, weight=1)
+        table_card.rowconfigure(0, weight=1)
 
-        self.empty_label = ttk.Label(
-            shell,
-            text=text(
-                "No refresh tasks yet. Click Add task to choose an Excel file and schedule its daily refresh.",
-                "还没有刷新任务。点击“添加任务”选择 Excel 文件并设置每日刷新时间。",
-            ),
-            style="Subtle.TLabel",
-        )
+        self.empty_frame = Frame(table_card, bg="#ffffff")
+        Label(self.empty_frame, text="▤◷", bg="#ffffff", fg="#0f8554", font=("Segoe UI Symbol", 42, "bold")).pack(pady=(46, 8))
+        Label(self.empty_frame, text="暂无刷新任务", bg="#ffffff", fg="#101828", font=("Segoe UI", 16, "bold")).pack()
+        Label(
+            self.empty_frame,
+            text="点击下方“添加任务”来选择 Excel 文件并设置每日刷新时间。",
+            bg="#ffffff",
+            fg="#667085",
+            font=("Segoe UI", 10),
+        ).pack(pady=(8, 18))
+        self.make_action_button(self.empty_frame, "＋  添加任务", self.add_task, primary=True).pack()
 
-        self.actions = ttk.Frame(shell)
-        self.actions.pack(fill="x", pady=(14, 0))
-        ttk.Button(self.actions, text=text("Add task", "添加任务"), command=self.add_task, style="Accent.TButton").pack(side="left")
+        self.actions = Frame(content, bg="#ffffff")
+        self.actions.pack(fill="x", padx=26, pady=(0, 26))
+        self.make_action_button(self.actions, "＋  添加任务", self.add_task, primary=True).pack(side="left")
 
-        task_actions = ttk.Frame(self.actions)
+        task_actions = Frame(self.actions, bg="#ffffff")
         task_actions.pack(side="left", padx=(12, 0))
-        ttk.Button(task_actions, text=text("Run now", "立即运行"), command=self.run_now).pack(side="left")
-        ttk.Button(task_actions, text=text("Edit", "编辑"), command=self.edit_task).pack(side="left", padx=(6, 0))
-        ttk.Button(task_actions, text=text("Pause / Enable", "暂停 / 启用"), command=self.toggle_task).pack(side="left", padx=(6, 0))
-        ttk.Button(task_actions, text=text("Delete", "删除"), command=self.delete_task).pack(side="left", padx=(6, 0))
+        self.make_action_button(task_actions, "▷  立即运行", self.run_now).pack(side="left", padx=(0, 8))
+        self.make_action_button(task_actions, "✎  编辑", self.edit_task).pack(side="left", padx=(0, 8))
+        self.make_action_button(task_actions, "Ⅱ  暂停", self.toggle_task).pack(side="left", padx=(0, 8))
+        self.make_action_button(task_actions, "▷  启用", self.toggle_task).pack(side="left", padx=(0, 8))
+        self.make_action_button(task_actions, "▢  删除", self.delete_task, danger=True).pack(side="left", padx=(0, 8))
 
-        utility_actions = ttk.Frame(self.actions)
+        Frame(self.actions, bg="#e3e8ef", width=1, height=38).pack(side="left", padx=(20, 14))
+        utility_actions = Frame(self.actions, bg="#ffffff")
         utility_actions.pack(side="right")
-        ttk.Button(utility_actions, text=text("Logs", "日志"), command=self.open_logs).pack(side="left")
-        ttk.Button(utility_actions, text=text("Refresh", "刷新"), command=self.reload).pack(side="left", padx=(6, 0))
+        self.make_action_button(utility_actions, "▤  日志", self.open_logs).pack(side="left", padx=(0, 10))
+        self.make_action_button(utility_actions, "⟳  刷新", self.reload, outline=True).pack(side="left")
 
         self.root.protocol("WM_DELETE_WINDOW", self.root.destroy)
         self.refresh_list()
@@ -412,16 +478,70 @@ class App:
             style.theme_use("clam")
         except Exception:
             pass
-        self.root.configure(bg="#f6f7f9")
-        style.configure("TFrame", background="#f6f7f9")
-        style.configure("Title.TLabel", background="#f6f7f9", foreground="#18202f", font=("Segoe UI", 18, "bold"))
-        style.configure("Subtle.TLabel", background="#f6f7f9", foreground="#5d6678", font=("Segoe UI", 10))
-        style.configure("Notice.TLabel", background="#eef6f2", foreground="#24533d", padding=(10, 8), font=("Segoe UI", 10))
-        style.configure("Badge.TLabel", background="#1f6f4a", foreground="#ffffff", padding=(12, 6), font=("Segoe UI", 10, "bold"))
-        style.configure("Treeview", rowheight=30, font=("Segoe UI", 10), background="#ffffff", fieldbackground="#ffffff")
-        style.configure("Treeview.Heading", font=("Segoe UI", 10, "bold"), padding=(6, 6))
-        style.configure("TButton", font=("Segoe UI", 10), padding=(10, 6))
-        style.configure("Accent.TButton", font=("Segoe UI", 10, "bold"), padding=(12, 6))
+        self.root.configure(bg="#f4f6f8")
+        style.configure("Treeview", rowheight=34, font=("Segoe UI", 10), background="#ffffff", fieldbackground="#ffffff", borderwidth=0)
+        style.configure("Treeview.Heading", font=("Segoe UI", 10, "bold"), foreground="#445066", background="#ffffff", padding=(8, 12))
+        style.map("Treeview", background=[("selected", "#e9f6ee")], foreground=[("selected", "#101828")])
+
+    def make_nav_button(self, label: str, icon: str, command=None, active: bool = False) -> Button:
+        bg = "#edf7f1" if active else "#fbfcfd"
+        fg = "#0f8554" if active else "#2f3a4d"
+        return Button(
+            self.sidebar,
+            text=f"{icon}   {label}",
+            command=command,
+            anchor="w",
+            bg=bg,
+            fg=fg,
+            activebackground="#edf7f1",
+            activeforeground="#0f8554",
+            relief="flat",
+            bd=0,
+            padx=16,
+            pady=13,
+            font=("Segoe UI", 11, "bold" if active else "normal"),
+            cursor="hand2",
+        )
+
+    def make_action_button(self, parent, label: str, command, primary: bool = False, danger: bool = False, outline: bool = False) -> Button:
+        if primary:
+            bg, fg, border = "#0f8a55", "#ffffff", "#0f8a55"
+            active_bg = "#0b7446"
+        elif danger:
+            bg, fg, border = "#ffffff", "#d93a3a", "#e5e9ef"
+            active_bg = "#fff2f2"
+        elif outline:
+            bg, fg, border = "#ffffff", "#118352", "#a8d8bf"
+            active_bg = "#edf8f1"
+        else:
+            bg, fg, border = "#ffffff", "#175b3d", "#e1e6ed"
+            active_bg = "#f4faf7"
+        return Button(
+            parent,
+            text=label,
+            command=command,
+            bg=bg,
+            fg=fg,
+            activebackground=active_bg,
+            activeforeground=fg,
+            relief="flat",
+            bd=0,
+            highlightthickness=1,
+            highlightbackground=border,
+            padx=17,
+            pady=10,
+            font=("Segoe UI", 10, "bold"),
+            cursor="hand2",
+        )
+
+    def show_settings(self) -> None:
+        messagebox.showinfo("设置 / Settings", "当前版本暂无额外设置。\nSettings will be added in a later version.")
+
+    def show_about(self) -> None:
+        messagebox.showinfo(
+            "关于 / About",
+            "Excel Auto Refresh v1.0.0\n\n本地 Excel 自动刷新工具。\nFiles stay on this computer.",
+        )
 
     def reload(self) -> None:
         self.config = load_config()
@@ -450,12 +570,16 @@ class App:
                 "",
                 END,
                 iid=task["id"],
-                values=(name, task.get("time", "--:--"), status, last_run or "-", last_status),
+                values=(name, task.get("time", "--:--"), status, last_run or "-", last_status, "Use buttons below / 使用下方按钮"),
             )
         if self.config.get("tasks"):
-            self.empty_label.pack_forget()
+            self.empty_frame.place_forget()
+            self.tree.grid()
+            self.y_scroll.grid()
         else:
-            self.empty_label.pack(fill="x", pady=(10, 0), before=self.actions)
+            self.tree.grid_remove()
+            self.y_scroll.grid_remove()
+            self.empty_frame.place(relx=0.5, rely=0.5, anchor="center")
 
     def add_task(self) -> None:
         dialog = TaskDialog(self.root)
