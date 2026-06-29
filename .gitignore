@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+build/
+*.spec
+
+# Local runtime data
+config.json
+logs/
+
+# Keep generated EXE out of normal source commits unless explicitly released.
+scripts/dist/

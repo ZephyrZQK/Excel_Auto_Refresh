@@ -1,0 +1,4 @@
+interface:
+  display_name: "Excel Pivot Auto Refresh"
+  short_description: "Create a bilingual local Windows app for scheduled Excel pivot refreshes."
+  default_prompt: "Use $excel-pivot-auto-refresh to create or maintain a bilingual local Windows app that schedules Excel pivot table refreshes. / 使用 $excel-pivot-auto-refresh 创建或维护一个中英双语的 Windows 本地 Excel 定时刷新应用。"
