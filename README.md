@@ -4,6 +4,14 @@ A local Windows desktop app for scheduling automatic Excel refresh tasks. It is 
 
 这是一个 Windows 本地桌面应用，用于定时自动刷新 Excel。它面向非技术用户，适合在不编写 VBA 或脚本的情况下刷新工作簿、Power Query、外部数据连接和数据透视表。
 
+## Beginner Guide / 新手教程
+
+If you are new to GitHub, Codex skills, or `.exe` tools, start here:
+
+如果你完全不会用 GitHub、Codex skills 或 `.exe` 工具，请先看这里：
+
+[docs/BEGINNER_GUIDE.md](docs/BEGINNER_GUIDE.md)
+
 ## Key Features / 主要功能
 
 - Multiple Excel refresh tasks / 支持多个 Excel 刷新任务
